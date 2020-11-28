@@ -1,0 +1,26 @@
+﻿<Window x:Class="LegoArt.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:LegoArt"
+        mc:Ignorable="d"
+        Title="Lego Art Color Info" Height="500" Width="420">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="25"/>
+            <RowDefinition Height="20"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Height="25" VerticalAlignment="Top">
+            <Label Width="50" Content="Bild:"/>
+            <TextBox Width="300" x:Name="tbImagePath" />
+            <Button Width="50" Name="btnImageChooser" Content="..." Click="btnImageChooser_Click"/>
+        </StackPanel>
+        
+        <StackPanel Grid.Row="2" Orientation="Vertical" Name="parentStackPanel" VerticalAlignment="Top">
+            
+        </StackPanel>
+    </Grid>
+</Window>
