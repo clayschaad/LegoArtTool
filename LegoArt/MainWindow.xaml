@@ -22,6 +22,10 @@
             <TextBox Width="300" x:Name="tbImagePath" />
             <Button Width="50" Name="btnImageChooser" Content="..." Click="btnImageChooser_Click"/>
         </StackPanel>
+        
+        <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" Height="25" VerticalAlignment="Top" Margin="5, 0 , 0, 0">
+            <Button Width="200" Name="btnInstructionsPersister" Content="Save Instructions" Click="btnInstructionsPersister_Click"/>
+        </StackPanel>
 
         <StackPanel Grid.Row="2" Orientation="Vertical" Name="parentStackPanel" VerticalAlignment="Top">
         </StackPanel>
