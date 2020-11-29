@@ -30,38 +30,32 @@ namespace LegoArt
 
         private void LoadImage(string path)
         {
-            var legoColorService = new LegoColorService();
-
-            var bitmap = new System.Drawing.Bitmap(path);
-            var width = bitmap.Width;
-            var height = bitmap.Height;
-            for (int h = 0; h < height; h++)
+            var legoArtColorService = new LegoArtColorService();
+            var legoArtColors = legoArtColorService.ParseImage(path);
+            if (legoArtColors != null)
             {
-                for (int w = 0; w < width; w++)
+                parentStackPanel.Children.Clear();
+
+                AddLine(System.Drawing.Color.White, "Have", "Needed", "RGB", "#", "Difference", System.Drawing.Color.White);
+
+                var sortedColors = legoArtColors.OrderBy(c => c.LegoNumber).ToList();
+                for (int i = 0; i < sortedColors.Count; i++)
                 {
-                    var clr = bitmap.GetPixel(h, w);
-                    var legoColorInfo = legoColorService.GetColorInfo(clr);
-                    legoColorInfo.NeedCount++;
+                    var color = sortedColors[i].Color;
+                    var textRgb = $"{color.R};{color.G};{color.B}";
+                    var difference = sortedColors[i].HaveCount - sortedColors[i].NeedCount;
+                    var statusColor = difference < 0 ? System.Drawing.Color.Red : System.Drawing.Color.Green;
+                    AddLine(color, sortedColors[i].HaveCount.ToString(), sortedColors[i].NeedCount.ToString(), textRgb, sortedColors[i].LegoNumber.ToString(), difference.ToString(), statusColor);
                 }
+
+                var have = legoArtColors.Sum(l => l.HaveCount);
+                var needed = legoArtColors.Sum(l => l.NeedCount);
+                AddLine(System.Drawing.Color.White, have.ToString(), needed.ToString(), "Total:", "", "", System.Drawing.Color.White);
             }
-
-            parentStackPanel.Children.Clear();
-
-            AddLine(System.Drawing.Color.White, "Have", "Needed", "RGB", "#", "Difference", System.Drawing.Color.White);
-
-            var sortedColors = legoColorService.LegoColors.OrderBy(c => c.LegoNumber).ToList();
-            for (int i = 0; i < sortedColors.Count; i++)
+            else
             {
-                var color = sortedColors[i].Color;
-                var textRgb = $"{color.R};{color.G};{color.B}";
-                var difference = sortedColors[i].HaveCount - sortedColors[i].NeedCount;
-                var statusColor = difference < 0 ? System.Drawing.Color.Red : System.Drawing.Color.Green;
-                AddLine(color, sortedColors[i].HaveCount.ToString(), sortedColors[i].NeedCount.ToString(), textRgb, sortedColors[i].LegoNumber.ToString(), difference.ToString(), statusColor);
+                MessageBox.Show("Image includes wrong colors", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-
-            var have = legoColorService.LegoColors.Sum(l => l.HaveCount);
-            var needed = legoColorService.LegoColors.Sum(l => l.NeedCount);
-            AddLine(System.Drawing.Color.White, have.ToString(), needed.ToString(), "Total:", "", "", System.Drawing.Color.White);
         }
 
         private void AddLine(System.Drawing.Color color, string textHave, string textNeed, string textRgb, string textNumber, string textDifference, System.Drawing.Color statusColor)
