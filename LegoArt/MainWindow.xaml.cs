@@ -1,4 +1,5 @@
-﻿using Microsoft.Win32;
+﻿using LegoArtTool;
+using Microsoft.Win32;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -39,15 +40,14 @@ namespace LegoArt
                 for (int w = 0; w < width; w++)
                 {
                     var clr = bitmap.GetPixel(h, w);
-                    var legoColor = ConvertDrawingToWindowsMediaColor(clr);
-                    var legoColorInfo = legoColorService.GetColorInfo(legoColor);
+                    var legoColorInfo = legoColorService.GetColorInfo(clr);
                     legoColorInfo.NeedCount++;
                 }
             }
 
             parentStackPanel.Children.Clear();
 
-            AddLine(Colors.White, "Have", "Needed", "RGB", "#", "Difference", Colors.White);
+            AddLine(System.Drawing.Color.White, "Have", "Needed", "RGB", "#", "Difference", System.Drawing.Color.White);
 
             var sortedColors = legoColorService.LegoColors.OrderBy(c => c.LegoNumber).ToList();
             for (int i = 0; i < sortedColors.Count; i++)
@@ -55,21 +55,22 @@ namespace LegoArt
                 var color = sortedColors[i].Color;
                 var textRgb = $"{color.R};{color.G};{color.B}";
                 var difference = sortedColors[i].HaveCount - sortedColors[i].NeedCount;
-                var statusColor = difference < 0 ? Colors.Red : Colors.Green;
+                var statusColor = difference < 0 ? System.Drawing.Color.Red : System.Drawing.Color.Green;
                 AddLine(color, sortedColors[i].HaveCount.ToString(), sortedColors[i].NeedCount.ToString(), textRgb, sortedColors[i].LegoNumber.ToString(), difference.ToString(), statusColor);
             }
 
             var have = legoColorService.LegoColors.Sum(l => l.HaveCount);
             var needed = legoColorService.LegoColors.Sum(l => l.NeedCount);
-            AddLine(Colors.White, have.ToString(), needed.ToString(), "Total:", "", "", Colors.White);
+            AddLine(System.Drawing.Color.White, have.ToString(), needed.ToString(), "Total:", "", "", System.Drawing.Color.White);
         }
 
-        private void AddLine(Color color, string textHave, string textNeed, string textRgb, string textNumber, string textDifference, Color statusColor)
+        private void AddLine(System.Drawing.Color color, string textHave, string textNeed, string textRgb, string textNumber, string textDifference, System.Drawing.Color statusColor)
         {
+            var displayColor = ConvertDrawingToWindowsMediaColor(color);
             var rect = new Rectangle();
             rect.Width = 20;
             rect.Height = 20;
-            rect.Fill = new SolidColorBrush(color);
+            rect.Fill = new SolidColorBrush(displayColor);
 
             var textBlockHave = new TextBlock();
             textBlockHave.Width = 40;
@@ -101,10 +102,11 @@ namespace LegoArt
             differenceTextBlock.TextAlignment = TextAlignment.Center;
             differenceTextBlock.Text = textDifference;
 
+            var displayStatusColor = ConvertDrawingToWindowsMediaColor(statusColor);
             var status = new Rectangle();
             status.Width = 20;
             status.Height = 20;
-            status.Fill = new SolidColorBrush(statusColor);
+            status.Fill = new SolidColorBrush(displayStatusColor);
 
             var stackPanel = new StackPanel();
             stackPanel.Orientation = Orientation.Horizontal;
