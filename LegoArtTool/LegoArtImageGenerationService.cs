@@ -67,7 +67,7 @@ namespace LegoArtTool
             int xPosition,
             int yPosition)
         {
-            var legoArtColorOffsets = legoArtColorInfos.Select(i => ColorOffset(inputColor, i)).ToList();
+            var legoArtColorOffsets = legoArtColorInfos.Select(i => ColourDistance(inputColor, i)).ToList();
             return new Pixel(xPosition, yPosition, legoArtColorOffsets);
         }
         
