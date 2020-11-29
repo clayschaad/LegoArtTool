@@ -5,22 +5,31 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LegoArt"
         mc:Ignorable="d"
-        Title="Lego Art Color Info" Height="500" Width="420">
+        Title="Lego Art Color Info" Height="500" Width="800">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="25"/>
             <RowDefinition Height="20"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="400" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
         
         <StackPanel Grid.Row="0" Orientation="Horizontal" Height="25" VerticalAlignment="Top">
             <Label Width="50" Content="Bild:"/>
             <TextBox Width="300" x:Name="tbImagePath" />
             <Button Width="50" Name="btnImageChooser" Content="..." Click="btnImageChooser_Click"/>
         </StackPanel>
-        
+
         <StackPanel Grid.Row="2" Orientation="Vertical" Name="parentStackPanel" VerticalAlignment="Top">
-            
         </StackPanel>
+        <StackPanel Grid.Column="1" Grid.Row="2" Orientation="Horizontal">
+            <Image  HorizontalAlignment="Left"  Grid.Row="2" VerticalAlignment="Top" Name="sourceImage" Stretch="None"/>
+            <Image  HorizontalAlignment="Left"  Grid.Row="2" VerticalAlignment="Top" Name="scaledImage" Stretch="None"/>
+        </StackPanel>
+
+
     </Grid>
 </Window>

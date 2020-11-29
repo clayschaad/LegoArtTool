@@ -3,6 +3,7 @@ using Microsoft.Win32;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 
@@ -13,9 +14,17 @@ namespace LegoArt
     /// </summary>
     public partial class MainWindow : Window
     {
+        private readonly LegoArtColorService legoArtColorService;
+        private readonly BitmapHelperService bitmapHelperService;
+        private readonly ImageHelperService imageHelperService;
+
         public MainWindow()
         {
             InitializeComponent();
+
+            legoArtColorService = new LegoArtColorService();
+            bitmapHelperService = new BitmapHelperService();
+            imageHelperService = new ImageHelperService();
         }
 
         private void btnImageChooser_Click(object sender, RoutedEventArgs e)
@@ -24,16 +33,33 @@ namespace LegoArt
             if (openFileDialog.ShowDialog() == true)
             {
                 tbImagePath.Text = openFileDialog.FileName;
+
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    Mouse.OverrideCursor = Cursors.Wait;
+                });
+
                 LoadImage(openFileDialog.FileName);
+
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    Mouse.OverrideCursor = null;
+                });
             }
         }
 
         private void LoadImage(string path)
         {
-            var legoArtColorService = new LegoArtColorService();
-            var legoArtColors = legoArtColorService.ParseImage(path);
+            var bitmap = new System.Drawing.Bitmap(path);
+            var legoArtColors = legoArtColorService.ParseImage(bitmap);
             if (legoArtColors != null)
             {
+                var sourceBitamp = bitmapHelperService.Scale(bitmap, 1);
+                sourceImage.Source = imageHelperService.LoadToImage(sourceBitamp);
+
+                var convertedBitmap = bitmapHelperService.ConvertToPixelMatrix(sourceBitamp, 20);
+                scaledImage.Source = imageHelperService.LoadToImage(convertedBitmap);
+
                 parentStackPanel.Children.Clear();
 
                 AddLine(System.Drawing.Color.White, "Have", "Needed", "RGB", "#", "Difference", System.Drawing.Color.White);
@@ -60,7 +86,7 @@ namespace LegoArt
 
         private void AddLine(System.Drawing.Color color, string textHave, string textNeed, string textRgb, string textNumber, string textDifference, System.Drawing.Color statusColor)
         {
-            var displayColor = ConvertDrawingToWindowsMediaColor(color);
+            var displayColor = imageHelperService.ConvertDrawingToWindowsMediaColor(color);
             var rect = new Rectangle();
             rect.Width = 20;
             rect.Height = 20;
@@ -96,7 +122,7 @@ namespace LegoArt
             differenceTextBlock.TextAlignment = TextAlignment.Center;
             differenceTextBlock.Text = textDifference;
 
-            var displayStatusColor = ConvertDrawingToWindowsMediaColor(statusColor);
+            var displayStatusColor = imageHelperService.ConvertDrawingToWindowsMediaColor(statusColor);
             var status = new Rectangle();
             status.Width = 20;
             status.Height = 20;
@@ -113,11 +139,6 @@ namespace LegoArt
             stackPanel.Children.Add(differenceTextBlock);
             stackPanel.Children.Add(status);
             parentStackPanel.Children.Add(stackPanel);
-        }
-
-        private Color ConvertDrawingToWindowsMediaColor(System.Drawing.Color inputColor)
-        {
-            return Color.FromArgb(inputColor.A, inputColor.R, inputColor.G, inputColor.B);
         }
     }
 }
