@@ -71,7 +71,7 @@ namespace LegoArt
                 var sourceBitmap = bitmapHelperService.Scale(reducedBitMap, 1);
                 sourceImage.Source = imageHelperService.LoadToImage(sourceBitmap);
 
-                var convertedBitmap = bitmapHelperService.ConvertToPixelMatrix(sourceBitmap, 20);
+                var convertedBitmap = bitmapHelperService.ConvertToPixelMatrix(sourceBitmap, legoArtColorService.GetLegoColors());
                 scaledImage.Source = imageHelperService.LoadToImage(convertedBitmap);
 
                 btnInstructionsPersister.Visibility = Visibility.Visible;
