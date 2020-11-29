@@ -29,11 +29,10 @@ namespace LegoArtTool
             LegoColors.Add(new LegoArtColorInfo(Color.FromArgb(66, 23, 3), 15, 554));
         }
 
-        public List<LegoArtColorInfo> ParseImage(string imagePath)
+        public static List<LegoArtColorInfo> ParseImage(Bitmap bitmap)
         {
             var parsedLegoColors = new List<LegoArtColorInfo>(LegoColors);
 
-            var bitmap = new Bitmap(imagePath);
             var width = bitmap.Width;
             var height = bitmap.Height;
             for (int h = 0; h < height; h++)
