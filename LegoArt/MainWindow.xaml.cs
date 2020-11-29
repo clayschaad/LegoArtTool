@@ -17,6 +17,7 @@ namespace LegoArt
         private readonly LegoArtColorService legoArtColorService;
         private readonly BitmapHelperService bitmapHelperService;
         private readonly ImageHelperService imageHelperService;
+        private LegoArtImageGenerationService legoArtImageGenerationService;
 
         public MainWindow()
         {
@@ -25,6 +26,7 @@ namespace LegoArt
             legoArtColorService = new LegoArtColorService();
             bitmapHelperService = new BitmapHelperService();
             imageHelperService = new ImageHelperService();
+            legoArtImageGenerationService = new LegoArtImageGenerationService();
         }
 
         private void btnImageChooser_Click(object sender, RoutedEventArgs e)
@@ -51,13 +53,15 @@ namespace LegoArt
         private void LoadImage(string path)
         {
             var bitmap = new System.Drawing.Bitmap(path);
-            var legoArtColors = legoArtColorService.ParseImage(bitmap);
+            var reducedBitMap = legoArtImageGenerationService.GenerateLegoArtImageFromFullColorImage(bitmap);
+
+            var legoArtColors = legoArtColorService.ParseImage(reducedBitMap);
             if (legoArtColors != null)
             {
-                var sourceBitamp = bitmapHelperService.Scale(bitmap, 1);
-                sourceImage.Source = imageHelperService.LoadToImage(sourceBitamp);
+                var sourceBitmap = bitmapHelperService.Scale(reducedBitMap, 1);
+                sourceImage.Source = imageHelperService.LoadToImage(sourceBitmap);
 
-                var convertedBitmap = bitmapHelperService.ConvertToPixelMatrix(sourceBitamp, 20);
+                var convertedBitmap = bitmapHelperService.ConvertToPixelMatrix(sourceBitmap, 20);
                 scaledImage.Source = imageHelperService.LoadToImage(convertedBitmap);
 
                 parentStackPanel.Children.Clear();
