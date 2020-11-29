@@ -3,6 +3,7 @@ using Microsoft.Win32;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 
@@ -32,7 +33,18 @@ namespace LegoArt
             if (openFileDialog.ShowDialog() == true)
             {
                 tbImagePath.Text = openFileDialog.FileName;
+
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    Mouse.OverrideCursor = Cursors.Wait;
+                });
+
                 LoadImage(openFileDialog.FileName);
+
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    Mouse.OverrideCursor = null;
+                });
             }
         }
 
@@ -41,11 +53,12 @@ namespace LegoArt
             var legoArtColors = legoArtColorService.ParseImage(path);
             if (legoArtColors != null)
             {
-                var sourceBitamp = bitmapHelperService.ScaleImage(path, 1);
+                var bitmap = new System.Drawing.Bitmap(path);
+                var sourceBitamp = bitmapHelperService.Scale(bitmap, 1);
                 sourceImage.Source = imageHelperService.LoadToImage(sourceBitamp);
 
-                var scaledBitamp = bitmapHelperService.ScaleImage(path, 5);
-                scaledImage.Source = imageHelperService.LoadToImage(scaledBitamp);
+                var convertedBitmap = bitmapHelperService.ConvertToPixelMatrix(sourceBitamp, 20);
+                scaledImage.Source = imageHelperService.LoadToImage(convertedBitmap);
 
                 parentStackPanel.Children.Clear();
 

@@ -1,30 +1,38 @@
-﻿using System.Drawing;
+﻿using LegoArtTool.Pixels;
+using System.Drawing;
 
 namespace LegoArtTool
 {
     public class BitmapHelperService
     {
-        public Bitmap ScaleImage(string path, int scaleFactor)
+        public Bitmap Scale(Bitmap bitmap, int scaleFactor)
         {
-            var inputBitmap = new Bitmap(path);
-            var scaledBitmap = new Bitmap(inputBitmap.Width * scaleFactor, inputBitmap.Height * scaleFactor);
+            var scaledBitmap = new Bitmap(bitmap.Width * scaleFactor, bitmap.Height * scaleFactor);
 
-            for (int x = 0; x < inputBitmap.Width; x++)
+            for (int x = 0; x < bitmap.Width; x++)
             {
-                for (int y = 0; y < inputBitmap.Height; y++)
+                for (int y = 0; y < bitmap.Height; y++)
                 {
-                    var sourcePixel = inputBitmap.GetPixel(x, y);
+                    var sourcePixel = bitmap.GetPixel(x, y);
+                    var sourceColor = Color.FromArgb(sourcePixel.ToArgb());
+
                     for (int scaleX = x * scaleFactor; scaleX < scaledBitmap.Width; scaleX++)
                     {
                         for (int scaleY = y * scaleFactor; scaleY < scaledBitmap.Height; scaleY++)
                         {
-                            scaledBitmap.SetPixel(scaleX, scaleY, Color.FromArgb(sourcePixel.ToArgb()));
+                            scaledBitmap.SetPixel(scaleX, scaleY, sourceColor);
                         }
                     }
                 }
             }
 
             return scaledBitmap;
+        }
+
+        public Bitmap ConvertToPixelMatrix(Bitmap bitmap, int pixelSize)
+        {
+            var pixelMatrix = new PixelMatrix(pixelSize, bitmap);
+            return pixelMatrix.ConvertBitmap();
         }
     }
 }
