@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace LegoArtTool.Pixels
 {
@@ -7,14 +9,12 @@ namespace LegoArtTool.Pixels
     {
         public Pixel[,] Pixels { get; private set; }
         public int MatrixSize { get; private set; }
-        public int PixelSize { get; private set; }
 
         private Random rnd = new Random();
 
-        public PixelMatrix(int pixelSize, Bitmap sourceBitmap)
+        public PixelMatrix(Bitmap sourceBitmap, List<LegoArtColorInfo> legoArtColors)
         {
             MatrixSize = sourceBitmap.Width;
-            PixelSize = pixelSize;
             Pixels = new Pixel[MatrixSize, MatrixSize];
 
             for (int x = 0; x < MatrixSize; x++)
@@ -23,14 +23,15 @@ namespace LegoArtTool.Pixels
                 {
                     var pixel = sourceBitmap.GetPixel(x, y);
                     var sourceColor = Color.FromArgb(pixel.ToArgb());
-                    Pixels[x, y] = new Pixel(sourceColor, PixelSize, 9);
+                    var legoNumber = legoArtColors.Single(l => l.Color == sourceColor).LegoNumber;
+                    Pixels[x, y] = new Pixel(sourceColor, legoNumber);
                 }
             }
         }
 
         public Bitmap ConvertBitmap()
         {
-            var bitmapSize = MatrixSize * PixelSize;
+            var bitmapSize = MatrixSize * Pixel.PixelSize;
             var bitmap = new Bitmap(bitmapSize, bitmapSize);
             using (var g = Graphics.FromImage(bitmap))
             {

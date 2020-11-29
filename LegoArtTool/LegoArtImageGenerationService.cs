@@ -35,19 +35,19 @@ namespace LegoArtTool
             var reducedBitmap = new Bitmap(bitmap.Width, bitmap.Height);
             
             var remainingColors = legoArtColorInfos.ToDictionary(k => k.LegoNumber, v => v.HaveCount);
-
-
+            
             while (pixels.Count(p => !p.IsAssigned) > 0)
             {
                 var minOffset = pixels.Where(p => !p.IsAssigned).SelectMany(p => p.LegoArtColorOffsets.Where(o => o.IsAvailable)
                         .Select(o => o.ColorOffset))
                         .Min(x => x);
 
-                var pixel = pixels.Where(p => !p.IsAssigned).First(p => p.LegoArtColorOffsets.Any(o => o.ColorOffset == minOffset));
+                var pixel = pixels.Where(p => !p.IsAssigned).First(p => p.LegoArtColorOffsets.Where(o => o.IsAvailable)
+                    .Any(o => o.ColorOffset == minOffset));
                 var legoArtColorInfo = pixel.LegoArtColorOffsets.First(o => o.ColorOffset == minOffset).LegoArtColorInfo;
+               
                 reducedBitmap.SetPixel(pixel.X, pixel.Y, legoArtColorInfo.Color);
-                
-                
+
                 remainingColors[legoArtColorInfo.LegoNumber]--;
                 pixel.IsAssigned = true;
 
@@ -62,50 +62,21 @@ namespace LegoArtTool
             return reducedBitmap;
         }
 
-        private Pixel MapPixel(
-            Color inputColor,
-            int xPosition,
-            int yPosition)
+        private Pixel MapPixel(Color inputColor, int xPosition, int yPosition)
         {
-            var legoArtColorOffsets = legoArtColorInfos.Select(i => ColorOffset(inputColor, i)).ToList();
+            var legoArtColorOffsets = legoArtColorInfos.Select(i => ColorDistance(inputColor, i)).ToList();
             return new Pixel(xPosition, yPosition, legoArtColorOffsets);
         }
         
-        private static LegoArtColorOffset ColourDistance(Color inputColor, LegoArtColorInfo colorInfo)
+        private static LegoArtColorOffset ColorDistance(Color inputColor, LegoArtColorInfo colorInfo)
         {
             var targetColor = colorInfo.Color;
-            var rmean = ((long)inputColor.R + (long)targetColor.R) / 2;
-            var r = (long)inputColor.R - (long)targetColor.R;
-            var g = (long)inputColor.G - (long)targetColor.G;
-            var b = (long)inputColor.B - (long)targetColor.B;
+            var rmean = (inputColor.R + (long)targetColor.R) / 2;
+            var r = inputColor.R - (long)targetColor.R;
+            var g = inputColor.G - (long)targetColor.G;
+            var b = inputColor.B - (long)targetColor.B;
             var offset = (decimal) Math.Sqrt((((512 + rmean) * r * r) >> 8) + 4 * g * g + (((767 - rmean) * b * b) >> 8));
             return new LegoArtColorOffset((decimal) offset, colorInfo);
-        }
-
-        private LegoArtColorOffset ColorOffset(Color inputColor, LegoArtColorInfo colorInfo)
-        {
-            var offset = Math.Abs(
-                       ColorNum(inputColor) - ColorNum(colorInfo.Color)) +
-                   GetHueDistance(inputColor.GetHue(), colorInfo.Color.GetHue());
-            
-            return new LegoArtColorOffset((decimal) offset, colorInfo);
-        }
-
-        private static float GetBrightness(Color c)
-        {
-            return (c.R * 0.299f + c.G * 0.587f + c.B *0.114f) / 256f;
-        }
-
-        private static float GetHueDistance(float hue1, float hue2)
-        { 
-            var d = Math.Abs(hue1 - hue2); 
-            return d > 180 ? 360 - d : d;
-            
-        }
-
-        private static float ColorNum(Color c)
-        {
-            return c.GetSaturation() + GetBrightness(c);
         }
     }
 }

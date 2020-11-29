@@ -1,11 +1,12 @@
-﻿using LegoArtTool;
+﻿using System.Drawing;
+using LegoArtTool;
 using Microsoft.Win32;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Shapes;
+using Rectangle = System.Windows.Shapes.Rectangle;
 
 namespace LegoArt
 {
@@ -17,7 +18,7 @@ namespace LegoArt
         private readonly LegoArtColorService legoArtColorService;
         private readonly BitmapHelperService bitmapHelperService;
         private readonly ImageHelperService imageHelperService;
-        private LegoArtImageGenerationService legoArtImageGenerationService;
+        private readonly LegoArtImageGenerationService legoArtImageGenerationService;
 
         public MainWindow()
         {
@@ -27,6 +28,8 @@ namespace LegoArt
             bitmapHelperService = new BitmapHelperService();
             imageHelperService = new ImageHelperService();
             legoArtImageGenerationService = new LegoArtImageGenerationService();
+
+            btnInstructionsPersister.Visibility = Visibility.Hidden;
         }
 
         private void btnImageChooser_Click(object sender, RoutedEventArgs e)
@@ -50,6 +53,15 @@ namespace LegoArt
             }
         }
 
+        private void btnInstructionsPersister_Click(object sender, RoutedEventArgs e)
+        {
+            var d = new DataObject(DataFormats.Bitmap, scaledImage.Source, true);
+            var bitmap = d.GetData(typeof(Bitmap)) as Bitmap;
+            var outputPath = BuildingInstructionService.PersistBuildingInstructions(bitmap, tbImagePath.Text);
+            MessageBox.Show($"Instructions saved to {outputPath}", "Saved", MessageBoxButton.OK, MessageBoxImage.Information);
+
+        }
+
         private void LoadImage(string path)
         {
             var bitmap = new System.Drawing.Bitmap(path);
@@ -61,9 +73,11 @@ namespace LegoArt
                 var sourceBitmap = bitmapHelperService.Scale(reducedBitMap, 1);
                 sourceImage.Source = imageHelperService.LoadToImage(sourceBitmap);
 
-                var convertedBitmap = bitmapHelperService.ConvertToPixelMatrix(sourceBitmap, 20);
+                var convertedBitmap = bitmapHelperService.ConvertToPixelMatrix(sourceBitmap, legoArtColorService.GetLegoColors());
                 scaledImage.Source = imageHelperService.LoadToImage(convertedBitmap);
 
+                btnInstructionsPersister.Visibility = Visibility.Visible;
+                
                 parentStackPanel.Children.Clear();
 
                 AddLine(System.Drawing.Color.White, "Have", "Needed", "RGB", "#", "Difference", System.Drawing.Color.White);

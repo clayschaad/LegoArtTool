@@ -1,4 +1,5 @@
 ﻿using LegoArtTool.Pixels;
+using System.Collections.Generic;
 using System.Drawing;
 
 namespace LegoArtTool
@@ -29,9 +30,9 @@ namespace LegoArtTool
             return scaledBitmap;
         }
 
-        public Bitmap ConvertToPixelMatrix(Bitmap bitmap, int pixelSize)
+        public Bitmap ConvertToPixelMatrix(Bitmap bitmap, List<LegoArtColorInfo> legoArtColors)
         {
-            var pixelMatrix = new PixelMatrix(pixelSize, bitmap);
+            var pixelMatrix = new PixelMatrix(bitmap, legoArtColors);
             return pixelMatrix.ConvertBitmap();
         }
     }
