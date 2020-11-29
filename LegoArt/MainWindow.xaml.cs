@@ -13,9 +13,17 @@ namespace LegoArt
     /// </summary>
     public partial class MainWindow : Window
     {
+        private readonly LegoArtColorService legoArtColorService;
+        private readonly BitmapHelperService bitmapHelperService;
+        private readonly ImageHelperService imageHelperService;
+
         public MainWindow()
         {
             InitializeComponent();
+
+            legoArtColorService = new LegoArtColorService();
+            bitmapHelperService = new BitmapHelperService();
+            imageHelperService = new ImageHelperService();
         }
 
         private void btnImageChooser_Click(object sender, RoutedEventArgs e)
@@ -30,10 +38,15 @@ namespace LegoArt
 
         private void LoadImage(string path)
         {
-            var legoArtColorService = new LegoArtColorService();
             var legoArtColors = legoArtColorService.ParseImage(path);
             if (legoArtColors != null)
             {
+                var sourceBitamp = bitmapHelperService.ScaleImage(path, 1);
+                sourceImage.Source = imageHelperService.LoadToImage(sourceBitamp);
+
+                var scaledBitamp = bitmapHelperService.ScaleImage(path, 5);
+                scaledImage.Source = imageHelperService.LoadToImage(scaledBitamp);
+
                 parentStackPanel.Children.Clear();
 
                 AddLine(System.Drawing.Color.White, "Have", "Needed", "RGB", "#", "Difference", System.Drawing.Color.White);
@@ -60,7 +73,7 @@ namespace LegoArt
 
         private void AddLine(System.Drawing.Color color, string textHave, string textNeed, string textRgb, string textNumber, string textDifference, System.Drawing.Color statusColor)
         {
-            var displayColor = ConvertDrawingToWindowsMediaColor(color);
+            var displayColor = imageHelperService.ConvertDrawingToWindowsMediaColor(color);
             var rect = new Rectangle();
             rect.Width = 20;
             rect.Height = 20;
@@ -96,7 +109,7 @@ namespace LegoArt
             differenceTextBlock.TextAlignment = TextAlignment.Center;
             differenceTextBlock.Text = textDifference;
 
-            var displayStatusColor = ConvertDrawingToWindowsMediaColor(statusColor);
+            var displayStatusColor = imageHelperService.ConvertDrawingToWindowsMediaColor(statusColor);
             var status = new Rectangle();
             status.Width = 20;
             status.Height = 20;
@@ -113,11 +126,6 @@ namespace LegoArt
             stackPanel.Children.Add(differenceTextBlock);
             stackPanel.Children.Add(status);
             parentStackPanel.Children.Add(stackPanel);
-        }
-
-        private Color ConvertDrawingToWindowsMediaColor(System.Drawing.Color inputColor)
-        {
-            return Color.FromArgb(inputColor.A, inputColor.R, inputColor.G, inputColor.B);
         }
     }
 }
