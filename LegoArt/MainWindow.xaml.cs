@@ -50,10 +50,10 @@ namespace LegoArt
 
         private void LoadImage(string path)
         {
-            var legoArtColors = legoArtColorService.ParseImage(path);
+            var bitmap = new System.Drawing.Bitmap(path);
+            var legoArtColors = legoArtColorService.ParseImage(bitmap);
             if (legoArtColors != null)
             {
-                var bitmap = new System.Drawing.Bitmap(path);
                 var sourceBitamp = bitmapHelperService.Scale(bitmap, 1);
                 sourceImage.Source = imageHelperService.LoadToImage(sourceBitamp);
 
