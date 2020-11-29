@@ -3,6 +3,7 @@ using Microsoft.Win32;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 
@@ -16,6 +17,7 @@ namespace LegoArt
         private readonly LegoArtColorService legoArtColorService;
         private readonly BitmapHelperService bitmapHelperService;
         private readonly ImageHelperService imageHelperService;
+        private LegoArtImageGenerationService legoArtImageGenerationService;
 
         public MainWindow()
         {
@@ -24,6 +26,7 @@ namespace LegoArt
             legoArtColorService = new LegoArtColorService();
             bitmapHelperService = new BitmapHelperService();
             imageHelperService = new ImageHelperService();
+            legoArtImageGenerationService = new LegoArtImageGenerationService();
         }
 
         private void btnImageChooser_Click(object sender, RoutedEventArgs e)
@@ -32,20 +35,34 @@ namespace LegoArt
             if (openFileDialog.ShowDialog() == true)
             {
                 tbImagePath.Text = openFileDialog.FileName;
+
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    Mouse.OverrideCursor = Cursors.Wait;
+                });
+
                 LoadImage(openFileDialog.FileName);
+
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    Mouse.OverrideCursor = null;
+                });
             }
         }
 
         private void LoadImage(string path)
         {
-            var legoArtColors = legoArtColorService.ParseImage(path);
+            var bitmap = new System.Drawing.Bitmap(path);
+            var reducedBitMap = legoArtImageGenerationService.GenerateLegoArtImageFromFullColorImage(bitmap);
+
+            var legoArtColors = legoArtColorService.ParseImage(reducedBitMap);
             if (legoArtColors != null)
             {
-                var sourceBitamp = bitmapHelperService.ScaleImage(path, 1);
-                sourceImage.Source = imageHelperService.LoadToImage(sourceBitamp);
+                var sourceBitmap = bitmapHelperService.Scale(reducedBitMap, 1);
+                sourceImage.Source = imageHelperService.LoadToImage(sourceBitmap);
 
-                var scaledBitamp = bitmapHelperService.ScaleImage(path, 5);
-                scaledImage.Source = imageHelperService.LoadToImage(scaledBitamp);
+                var convertedBitmap = bitmapHelperService.ConvertToPixelMatrix(sourceBitmap, 20);
+                scaledImage.Source = imageHelperService.LoadToImage(convertedBitmap);
 
                 parentStackPanel.Children.Clear();
 

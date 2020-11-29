@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Linq;
 
@@ -8,7 +7,14 @@ namespace LegoArtTool
 {
     public class LegoArtImageGenerationService
     {
-        [SuppressMessage("ReSharper.DPA", "DPA0002: Excessive memory allocations in SOH", MessageId = "type: WhereListIterator`1[LegoArtTool.LegoArtColorOffset]")]
+        private readonly List<LegoArtColorInfo> legoArtColorInfos;
+
+        public LegoArtImageGenerationService()
+        {
+            var legoArtColorService = new LegoArtColorService();
+            legoArtColorInfos = legoArtColorService.GetLegoColors();
+        }
+        
         public Bitmap GenerateLegoArtImageFromFullColorImage(Bitmap bitmap)
         {
             var width = bitmap.Width;
@@ -28,7 +34,6 @@ namespace LegoArtTool
             
             var reducedBitmap = new Bitmap(bitmap.Width, bitmap.Height);
             
-            var legoArtColorInfos = LegoArtColorService.LegoColors;
             var remainingColors = legoArtColorInfos.ToDictionary(k => k.LegoNumber, v => v.HaveCount);
 
 
@@ -62,10 +67,7 @@ namespace LegoArtTool
             int xPosition,
             int yPosition)
         {
-            var legoArtColorInfos = LegoArtColorService.LegoColors;
-
             var legoArtColorOffsets = legoArtColorInfos.Select(i => ColorOffset(inputColor, i)).ToList();
-            
             return new Pixel(xPosition, yPosition, legoArtColorOffsets);
         }
         
