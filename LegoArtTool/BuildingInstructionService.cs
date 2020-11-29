@@ -4,9 +4,9 @@ using System.IO;
 
 namespace LegoArtTool
 {
-    public class BuildingInstructionService
+    public static class BuildingInstructionService
     {
-        public static void PersistBuildingInstructions(Bitmap bitmap, string path)
+        public static string PersistBuildingInstructions(Bitmap bitmap, string path)
         {
             var segmentSize = bitmap.Width / 3;
             var outPutDirectory = CreateOutPutDirectory(path);
@@ -21,6 +21,8 @@ namespace LegoArtTool
                     segment.Save($"{outPutDirectory}/{segmentNumber++}.png", ImageFormat.Png);
                 }
             }
+
+            return outPutDirectory;
         }
 
         private static string CreateOutPutDirectory(string path)

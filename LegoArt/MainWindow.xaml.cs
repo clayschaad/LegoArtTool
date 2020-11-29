@@ -57,7 +57,9 @@ namespace LegoArt
         {
             var d = new DataObject(DataFormats.Bitmap, scaledImage.Source, true);
             var bitmap = d.GetData(typeof(Bitmap)) as Bitmap;
-            BuildingInstructionService.PersistBuildingInstructions(bitmap, tbImagePath.Text);
+            var outputPath = BuildingInstructionService.PersistBuildingInstructions(bitmap, tbImagePath.Text);
+            MessageBox.Show($"Instructions saved to {outputPath}", "Saved", MessageBoxButton.OK, MessageBoxImage.Information);
+
         }
 
         private void LoadImage(string path)
