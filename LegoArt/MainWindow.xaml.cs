@@ -7,6 +7,8 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using Rectangle = System.Windows.Shapes.Rectangle;
+using LegoArtTool.LegoArtColor;
+using LegoArtTool.BuildingInstruction;
 
 namespace LegoArt
 {
@@ -19,6 +21,7 @@ namespace LegoArt
         private readonly BitmapHelperService bitmapHelperService;
         private readonly ImageHelperService imageHelperService;
         private readonly LegoArtImageGenerationService legoArtImageGenerationService;
+        private readonly BuildingInstructionService buildingInstructionService;
 
         public MainWindow()
         {
@@ -28,6 +31,7 @@ namespace LegoArt
             bitmapHelperService = new BitmapHelperService();
             imageHelperService = new ImageHelperService();
             legoArtImageGenerationService = new LegoArtImageGenerationService();
+            buildingInstructionService = new BuildingInstructionService();
 
             btnInstructionsPersister.Visibility = Visibility.Hidden;
         }
@@ -39,43 +43,55 @@ namespace LegoArt
             {
                 tbImagePath.Text = openFileDialog.FileName;
 
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    Mouse.OverrideCursor = Cursors.Wait;
-                });
+                ShowWaitCursor();
 
                 LoadImage(openFileDialog.FileName);
 
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    Mouse.OverrideCursor = null;
-                });
+                HideWaitCursor();
             }
+        }
+
+        private void ShowWaitCursor()
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                Mouse.OverrideCursor = Cursors.Wait;
+            });
+        }
+
+        private void HideWaitCursor()
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                Mouse.OverrideCursor = null;
+            });
         }
 
         private void btnInstructionsPersister_Click(object sender, RoutedEventArgs e)
         {
-            var d = new DataObject(DataFormats.Bitmap, scaledImage.Source, true);
-            var bitmap = d.GetData(typeof(Bitmap)) as Bitmap;
-            var outputPath = BuildingInstructionService.PersistBuildingInstructions(bitmap, tbImagePath.Text);
-            MessageBox.Show($"Instructions saved to {outputPath}", "Saved", MessageBoxButton.OK, MessageBoxImage.Information);
+            ShowWaitCursor();
 
+            var d = new DataObject(DataFormats.Bitmap, legoArtImage.Source, true);
+            var legoArtBitmap = d.GetData(typeof(Bitmap)) as Bitmap;
+            var buildingInstructionBitmap = buildingInstructionService.CreateBuildingInstructionImage(legoArtBitmap, legoArtColorService.GetLegoColors());
+            var outputPath = buildingInstructionService.PersistBuildingInstructions(buildingInstructionBitmap, tbImagePath.Text);
+
+            HideWaitCursor();
+
+            MessageBox.Show($"Instructions saved to {outputPath}", "Saved", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         private void LoadImage(string path)
         {
-            var bitmap = new System.Drawing.Bitmap(path);
-            var reducedBitMap = legoArtImageGenerationService.GenerateLegoArtImageFromFullColorImage(bitmap);
+            var sourceBitmap = new Bitmap(path);
+            sourceImage.Source = imageHelperService.LoadToImage(bitmapHelperService.Scale(sourceBitmap, 1));
+
+            var reducedBitMap = legoArtImageGenerationService.GenerateLegoArtImageFromFullColorImage(sourceBitmap);
+            legoArtImage.Source = imageHelperService.LoadToImage(reducedBitMap);
 
             var legoArtColors = legoArtColorService.ParseImage(reducedBitMap);
             if (legoArtColors != null)
-            {
-                var sourceBitmap = bitmapHelperService.Scale(reducedBitMap, 1);
-                sourceImage.Source = imageHelperService.LoadToImage(sourceBitmap);
-
-                var convertedBitmap = bitmapHelperService.ConvertToPixelMatrix(sourceBitmap, legoArtColorService.GetLegoColors());
-                scaledImage.Source = imageHelperService.LoadToImage(convertedBitmap);
-
+            {               
                 btnInstructionsPersister.Visibility = Visibility.Visible;
                 
                 parentStackPanel.Children.Clear();

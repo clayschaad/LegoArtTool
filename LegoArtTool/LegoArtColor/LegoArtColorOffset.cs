@@ -1,4 +1,4 @@
-﻿namespace LegoArtTool
+﻿namespace LegoArtTool.LegoArtColor
 {
     public class LegoArtColorOffset
     {
@@ -12,7 +12,5 @@
             LegoArtColorInfo = legoArtColorInfo;
             IsAvailable = true;
         }
-
-
     }
 }

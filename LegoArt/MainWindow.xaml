@@ -31,7 +31,7 @@
         </StackPanel>
         <StackPanel Grid.Column="1" Grid.Row="2" Orientation="Horizontal">
             <Image  HorizontalAlignment="Left"  Grid.Row="2" VerticalAlignment="Top" Name="sourceImage" Stretch="None"/>
-            <Image  HorizontalAlignment="Left"  Grid.Row="2" VerticalAlignment="Top" Name="scaledImage" Stretch="None"/>
+            <Image  HorizontalAlignment="Left"  Grid.Row="2" VerticalAlignment="Top" Name="legoArtImage" Stretch="None"/>
         </StackPanel>
 
 

@@ -1,8 +1,8 @@
 ﻿using System.Drawing;
 
-namespace LegoArtTool.Pixels
+namespace LegoArtTool.BuildingInstruction
 {
-    public class Pixel
+    public class BuildingInstructionElement
     { 
         public Color Color { get; private set; }
         public int Number { get; private set; }
@@ -10,7 +10,7 @@ namespace LegoArtTool.Pixels
         public const int PixelSize = 50;
         private const int NumberSize = 20;
 
-        public Pixel(Color color, int number)
+        public BuildingInstructionElement(Color color, int number)
         {
             Color = color;
             Number = number;

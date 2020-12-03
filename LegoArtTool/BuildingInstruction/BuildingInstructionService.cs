@@ -1,12 +1,20 @@
-﻿using System.Drawing;
+﻿using LegoArtTool.LegoArtColor;
+using System.Collections.Generic;
+using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 
-namespace LegoArtTool
+namespace LegoArtTool.BuildingInstruction
 {
-    public static class BuildingInstructionService
+    public class BuildingInstructionService
     {
-        public static string PersistBuildingInstructions(Bitmap bitmap, string path)
+        public Bitmap CreateBuildingInstructionImage(Bitmap bitmap, List<LegoArtColorInfo> legoArtColors)
+        {
+            var pixelMatrix = new BuildingInstructionMatrix(bitmap, legoArtColors);
+            return pixelMatrix.GetBitmap();
+        }
+
+        public string PersistBuildingInstructions(Bitmap bitmap, string path)
         {
             var segmentSize = bitmap.Width / 3;
             var outPutDirectory = CreateOutPutDirectory(path);
@@ -25,7 +33,7 @@ namespace LegoArtTool
             return outPutDirectory;
         }
 
-        private static string CreateOutPutDirectory(string path)
+        private string CreateOutPutDirectory(string path)
         {
             var increment = 0;
             
@@ -39,7 +47,7 @@ namespace LegoArtTool
             return outputDirectoryPath;
         }
 
-        private static string GetOutputDirectoryPath(int increment, string path)
+        private string GetOutputDirectoryPath(int increment, string path)
         {
             var parent = Directory.GetParent(path);
             var filename = Path.GetFileNameWithoutExtension(path);

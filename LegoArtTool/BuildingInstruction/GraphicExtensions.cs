@@ -1,7 +1,7 @@
 ﻿using System.Drawing;
 using System.Drawing.Drawing2D;
 
-namespace LegoArtTool.Pixels
+namespace LegoArtTool.BuildingInstruction
 {
     public static class GraphicsExtensions
     {

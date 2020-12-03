@@ -1,21 +1,19 @@
-﻿using System;
+﻿using LegoArtTool.LegoArtColor;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 
-namespace LegoArtTool.Pixels
+namespace LegoArtTool.BuildingInstruction
 {
-    public class PixelMatrix
+    public class BuildingInstructionMatrix
     {
-        public Pixel[,] Pixels { get; private set; }
+        public BuildingInstructionElement[,] Pixels { get; private set; }
         public int MatrixSize { get; private set; }
 
-        private Random rnd = new Random();
-
-        public PixelMatrix(Bitmap sourceBitmap, List<LegoArtColorInfo> legoArtColors)
+        public BuildingInstructionMatrix(Bitmap sourceBitmap, List<LegoArtColorInfo> legoArtColors)
         {
             MatrixSize = sourceBitmap.Width;
-            Pixels = new Pixel[MatrixSize, MatrixSize];
+            Pixels = new BuildingInstructionElement[MatrixSize, MatrixSize];
 
             for (int x = 0; x < MatrixSize; x++)
             {
@@ -24,14 +22,14 @@ namespace LegoArtTool.Pixels
                     var pixel = sourceBitmap.GetPixel(x, y);
                     var sourceColor = Color.FromArgb(pixel.ToArgb());
                     var legoNumber = legoArtColors.Single(l => l.Color == sourceColor).LegoNumber;
-                    Pixels[x, y] = new Pixel(sourceColor, legoNumber);
+                    Pixels[x, y] = new BuildingInstructionElement(sourceColor, legoNumber);
                 }
             }
         }
 
-        public Bitmap ConvertBitmap()
+        public Bitmap GetBitmap()
         {
-            var bitmapSize = MatrixSize * Pixel.PixelSize;
+            var bitmapSize = MatrixSize * BuildingInstructionElement.PixelSize;
             var bitmap = new Bitmap(bitmapSize, bitmapSize);
             using (var g = Graphics.FromImage(bitmap))
             {
@@ -46,12 +44,6 @@ namespace LegoArtTool.Pixels
             }
 
             return bitmap;
-        }
-
-        private Color GetRandomColor()
-        {
-            Color randomColor = Color.FromArgb(rnd.Next(256), rnd.Next(256), rnd.Next(256));
-            return randomColor;
         }
     }
 }

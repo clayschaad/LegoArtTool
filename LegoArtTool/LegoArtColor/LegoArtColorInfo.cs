@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 
-namespace LegoArtTool
+namespace LegoArtTool.LegoArtColor
 {
     public class LegoArtColorInfo
     {
