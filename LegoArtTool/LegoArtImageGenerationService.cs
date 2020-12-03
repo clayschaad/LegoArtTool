@@ -8,16 +8,17 @@ namespace LegoArtTool
 {
     public class LegoArtImageGenerationService
     {
-        private readonly List<LegoArtColorInfo> legoArtColorInfos;
+        private readonly LegoArtColorService legoArtColorService;
 
         public LegoArtImageGenerationService()
         {
-            var legoArtColorService = new LegoArtColorService();
-            legoArtColorInfos = legoArtColorService.GetLegoColors();
+            legoArtColorService = new LegoArtColorService();
         }
         
-        public Bitmap GenerateLegoArtImageFromFullColorImage(Bitmap bitmap)
+        public Bitmap GenerateLegoArtImageFromFullColorImage(Bitmap bitmap, string legoArtSetKey)
         {
+            var legoArtColorInfos = legoArtColorService.GetLegoArtColorSet(legoArtSetKey);
+
             var width = bitmap.Width;
             var height = bitmap.Height;
             
@@ -28,7 +29,7 @@ namespace LegoArtTool
                 for (int w = 0; w < width; w++)
                 {
                     var color = bitmap.GetPixel(h, w);
-                    var pixel = MapPixel(color, h ,w);
+                    var pixel = MapPixel(legoArtColorInfos, color, h ,w);
                     pixels.Add(pixel);
                 }
             }
@@ -63,7 +64,7 @@ namespace LegoArtTool
             return reducedBitmap;
         }
 
-        private Pixel MapPixel(Color inputColor, int xPosition, int yPosition)
+        private Pixel MapPixel(List<LegoArtColorInfo> legoArtColorInfos, Color inputColor, int xPosition, int yPosition)
         {
             var legoArtColorOffsets = legoArtColorInfos.Select(i => ColorDistance(inputColor, i)).ToList();
             return new Pixel(xPosition, yPosition, legoArtColorOffsets);

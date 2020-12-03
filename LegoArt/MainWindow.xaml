@@ -18,8 +18,8 @@
         </Grid.ColumnDefinitions>
         
         <StackPanel Grid.Row="0" Orientation="Horizontal" Height="25" VerticalAlignment="Top">
-            <Label Width="50" Content="Bild:"/>
-            <TextBox Width="300" x:Name="tbImagePath" />
+            <Label Width="Auto" Content="Source Image:"/>
+            <TextBox Width="265" x:Name="tbImagePath" />
             <Button Width="50" Name="btnImageChooser" Content="..." Click="btnImageChooser_Click"/>
         </StackPanel>
         
@@ -27,11 +27,16 @@
             <Button Width="200" Name="btnInstructionsPersister" Content="Save Instructions" Click="btnInstructionsPersister_Click"/>
         </StackPanel>
 
-        <StackPanel Grid.Row="2" Orientation="Vertical" Name="parentStackPanel" VerticalAlignment="Top">
+        <StackPanel Grid.Row="2" Orientation="Vertical" VerticalAlignment="Top">
+            <Label Name="lblLegoArtSet" />
+            <StackPanel Orientation="Vertical" VerticalAlignment="Top" Name="parentStackPanel">
+            </StackPanel>
         </StackPanel>
-        <StackPanel Grid.Column="1" Grid.Row="2" Orientation="Horizontal">
-            <Image  HorizontalAlignment="Left"  Grid.Row="2" VerticalAlignment="Top" Name="sourceImage" Stretch="None"/>
-            <Image  HorizontalAlignment="Left"  Grid.Row="2" VerticalAlignment="Top" Name="legoArtImage" Stretch="None"/>
+        <StackPanel Grid.Column="1" Grid.Row="2" Orientation="Vertical">
+            <Label Name="lblSourceImage" Visibility="Hidden">Source Image:</Label>
+            <Image HorizontalAlignment="Left" Grid.Row="2" VerticalAlignment="Top" Name="sourceImage" Stretch="None"/>
+            <Label Name="lblLegoArtImage" Visibility="Hidden">LEGO® Art Image:</Label>
+            <Image HorizontalAlignment="Left" Grid.Row="2" VerticalAlignment="Top" Name="legoArtImage" Stretch="None"/>
         </StackPanel>
 
 

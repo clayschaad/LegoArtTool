@@ -1,4 +1,5 @@
 ﻿using LegoArtTool.LegoArtColor;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -26,7 +27,7 @@ namespace LegoArtTool.BuildingInstruction
                 {
                     var rectangle = new Rectangle(w * segmentSize, h * segmentSize, segmentSize, segmentSize);
                     var segment = bitmap.Clone(rectangle, bitmap.PixelFormat);
-                    segment.Save($"{outPutDirectory}/{segmentNumber++}.png", ImageFormat.Png);
+                    segment.Save($"{outPutDirectory}{Path.DirectorySeparatorChar}{segmentNumber++}.png", ImageFormat.Png);
                 }
             }
 
@@ -51,7 +52,7 @@ namespace LegoArtTool.BuildingInstruction
         {
             var parent = Directory.GetParent(path);
             var filename = Path.GetFileNameWithoutExtension(path);
-            return increment == 0 ? $"{parent}/legoArtInstructions" : $"{parent}/legoArtInstructions_{filename} ({increment})";
+            return increment == 0 ? $"{parent}{Path.DirectorySeparatorChar}legoArtInstructions" : $"{parent}{Path.DirectorySeparatorChar}legoArtInstructions_{filename} ({increment})";
         }
     }
 }

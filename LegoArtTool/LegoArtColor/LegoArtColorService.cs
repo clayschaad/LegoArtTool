@@ -6,10 +6,16 @@ namespace LegoArtTool.LegoArtColor
 {
     public class LegoArtColorService
     {
-        public List<LegoArtColorInfo> GetLegoColors()
-        {
-            var legoColors = new List<LegoArtColorInfo>();
+        public List<string> LegoArtSets { get; private set;}
 
+        private readonly Dictionary<string, List<LegoArtColorInfo>> legoArtColorSets;
+
+        public LegoArtColorService()
+        {
+            legoArtColorSets = new Dictionary<string, List<LegoArtColorInfo>>();
+
+            var key = "LEGO® Art The Beatles #31198";
+            var legoColors = new List<LegoArtColorInfo>();
             legoColors.Add(new LegoArtColorInfo(Color.FromArgb(0, 0, 0), 1, 698));
             legoColors.Add(new LegoArtColorInfo(Color.FromArgb(102, 101, 96), 2, 141));
             legoColors.Add(new LegoArtColorInfo(Color.FromArgb(167, 166, 162), 3, 51));
@@ -25,13 +31,20 @@ namespace LegoArtTool.LegoArtColor
             legoColors.Add(new LegoArtColorInfo(Color.FromArgb(206, 81, 0), 13, 85));
             legoColors.Add(new LegoArtColorInfo(Color.FromArgb(119, 40, 0), 14, 250));
             legoColors.Add(new LegoArtColorInfo(Color.FromArgb(66, 23, 3), 15, 554));
+            legoArtColorSets.Add(key, legoColors);
 
-            return legoColors;
+            LegoArtSets = new List<string>();
+            LegoArtSets.Add(key);
         }
 
-        public List<LegoArtColorInfo> ParseImage(Bitmap bitmap)
+        public List<LegoArtColorInfo> GetLegoArtColorSet(string legoArtSetKey)
         {
-            var parsedLegoColors = GetLegoColors();
+            return legoArtColorSets[legoArtSetKey];
+        }
+
+        public List<LegoArtColorInfo> ParseImage(Bitmap bitmap, string legoArtSetKey)
+        {
+            var parsedLegoColors = GetLegoArtColorSet(legoArtSetKey);
 
             var width = bitmap.Width;
             var height = bitmap.Height;

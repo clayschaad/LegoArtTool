@@ -9,6 +9,7 @@ using System.Windows.Media;
 using Rectangle = System.Windows.Shapes.Rectangle;
 using LegoArtTool.LegoArtColor;
 using LegoArtTool.BuildingInstruction;
+using System.Diagnostics;
 
 namespace LegoArt
 {
@@ -23,6 +24,8 @@ namespace LegoArt
         private readonly LegoArtImageGenerationService legoArtImageGenerationService;
         private readonly BuildingInstructionService buildingInstructionService;
 
+        private string currentLegoArtSet;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -34,6 +37,7 @@ namespace LegoArt
             buildingInstructionService = new BuildingInstructionService();
 
             btnInstructionsPersister.Visibility = Visibility.Hidden;
+            currentLegoArtSet = legoArtColorService.LegoArtSets.First();
         }
 
         private void btnImageChooser_Click(object sender, RoutedEventArgs e)
@@ -73,7 +77,7 @@ namespace LegoArt
 
             var d = new DataObject(DataFormats.Bitmap, legoArtImage.Source, true);
             var legoArtBitmap = d.GetData(typeof(Bitmap)) as Bitmap;
-            var buildingInstructionBitmap = buildingInstructionService.CreateBuildingInstructionImage(legoArtBitmap, legoArtColorService.GetLegoColors());
+            var buildingInstructionBitmap = buildingInstructionService.CreateBuildingInstructionImage(legoArtBitmap, legoArtColorService.GetLegoArtColorSet(currentLegoArtSet));
             var outputPath = buildingInstructionService.PersistBuildingInstructions(buildingInstructionBitmap, tbImagePath.Text);
 
             HideWaitCursor();
@@ -85,15 +89,18 @@ namespace LegoArt
         {
             var sourceBitmap = new Bitmap(path);
             sourceImage.Source = imageHelperService.LoadToImage(bitmapHelperService.Scale(sourceBitmap, 1));
+            lblSourceImage.Visibility = Visibility.Visible;
 
-            var reducedBitMap = legoArtImageGenerationService.GenerateLegoArtImageFromFullColorImage(sourceBitmap);
+            var reducedBitMap = legoArtImageGenerationService.GenerateLegoArtImageFromFullColorImage(sourceBitmap, currentLegoArtSet);
             legoArtImage.Source = imageHelperService.LoadToImage(reducedBitMap);
+            lblLegoArtImage.Visibility = Visibility.Visible;
 
-            var legoArtColors = legoArtColorService.ParseImage(reducedBitMap);
+            var legoArtColors = legoArtColorService.ParseImage(reducedBitMap, currentLegoArtSet);
             if (legoArtColors != null)
             {               
                 btnInstructionsPersister.Visibility = Visibility.Visible;
-                
+                lblLegoArtSet.Content = currentLegoArtSet;
+
                 parentStackPanel.Children.Clear();
 
                 AddLine(System.Drawing.Color.White, "Have", "Needed", "RGB", "#", "Difference", System.Drawing.Color.White);
