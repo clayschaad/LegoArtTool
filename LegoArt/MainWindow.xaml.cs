@@ -77,7 +77,7 @@ namespace LegoArt
 
             var d = new DataObject(DataFormats.Bitmap, legoArtImage.Source, true);
             var legoArtBitmap = d.GetData(typeof(Bitmap)) as Bitmap;
-            var buildingInstructionBitmap = buildingInstructionService.CreateBuildingInstructionImage(legoArtBitmap, legoArtColorService.GetLegoArtColorSet(currentLegoArtSet));
+            var buildingInstructionBitmap = buildingInstructionService.CreateBuildingInstructionImage(legoArtBitmap, legoArtColorService.GetLegoArtColorSet(currentLegoArtSet), true);
             var outputPath = buildingInstructionService.PersistBuildingInstructions(buildingInstructionBitmap, tbImagePath.Text);
 
             HideWaitCursor();

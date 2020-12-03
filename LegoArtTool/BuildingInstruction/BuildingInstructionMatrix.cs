@@ -27,7 +27,7 @@ namespace LegoArtTool.BuildingInstruction
             }
         }
 
-        public Bitmap GetBitmap()
+        public Bitmap GetBitmap(bool useDots)
         {
             var bitmapSize = MatrixSize * BuildingInstructionElement.PixelSize;
             var bitmap = new Bitmap(bitmapSize, bitmapSize);
@@ -37,7 +37,7 @@ namespace LegoArtTool.BuildingInstruction
                 {
                     for (int y = 0; y < MatrixSize; y++)
                     {
-                        var pixelBitmap = Pixels[x, y].GetBitmap();
+                        var pixelBitmap = Pixels[x, y].GetBitmap(useDots);
                         g.DrawImage(pixelBitmap, x * pixelBitmap.Width, y * pixelBitmap.Height);
                     }
                 }

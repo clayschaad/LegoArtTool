@@ -9,10 +9,10 @@ namespace LegoArtTool.BuildingInstruction
 {
     public class BuildingInstructionService
     {
-        public Bitmap CreateBuildingInstructionImage(Bitmap bitmap, List<LegoArtColorInfo> legoArtColors)
+        public Bitmap CreateBuildingInstructionImage(Bitmap bitmap, List<LegoArtColorInfo> legoArtColors, bool useDots)
         {
             var pixelMatrix = new BuildingInstructionMatrix(bitmap, legoArtColors);
-            return pixelMatrix.GetBitmap();
+            return pixelMatrix.GetBitmap(useDots);
         }
 
         public string PersistBuildingInstructions(Bitmap bitmap, string path)
